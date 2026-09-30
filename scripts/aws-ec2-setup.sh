@@ -54,6 +54,7 @@ fi
 # 5. Build and launch Docker containers
 echo "🐳 Building and starting Docker containers (Frontend + Backend + DB)..."
 sudo docker compose -f docker-compose.prod.yml pull || true
+sudo docker compose -f docker-compose.prod.yml down --remove-orphans || true
 sudo docker compose -f docker-compose.prod.yml up -d --build
 
 # 6. Wait for containers to initialize
