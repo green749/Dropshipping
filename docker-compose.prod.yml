@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_DB: dropship_management
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-Chithra@8123}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres_prod_pass_2026}
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
     networks:
@@ -39,7 +39,7 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_prod_pass_2026}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
@@ -65,7 +65,7 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_prod_pass_2026}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
@@ -91,7 +91,7 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_prod_pass_2026}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
@@ -117,7 +117,7 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_prod_pass_2026}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
@@ -143,7 +143,7 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_prod_pass_2026}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
@@ -169,7 +169,7 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_prod_pass_2026}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
@@ -201,7 +201,7 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_prod_pass_2026}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}

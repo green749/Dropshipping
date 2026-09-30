@@ -31,7 +31,7 @@ export const env = {
     MARKETING_NAME: process.env.MARKETING_DB_NAME || 'dropship_marketing',
     ANALYTICS_NAME: process.env.ANALYTICS_DB_NAME || 'dropship_analytics',
     USER: process.env.DB_USER || 'postgres',
-    PASSWORD: process.env.DB_PASSWORD || 'Chithra@8123',
+    PASSWORD: process.env.DB_PASSWORD || 'postgres_dev_pass_2026',
     LOGGING: process.env.DB_LOGGING === 'true' ? console.log : false,
   },
   JWT: {

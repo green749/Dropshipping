@@ -6,6 +6,9 @@ on:
       - main
 
 jobs:
+  # =============================================================
+  # Job 1: Build Docker Images and Push to Docker Hub
+  # =============================================================
   build-and-push:
     name: Build & Push Docker Images to Docker Hub
     runs-on: ubuntu-latest
@@ -39,6 +42,9 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-frontend:latest
 
+  # =============================================================
+  # Job 2: Deploy Updated Images to AWS EC2
+  # =============================================================
   deploy-to-aws:
     name: Deploy to AWS EC2 via SSH
     needs: build-and-push
@@ -50,61 +56,36 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME || 'ubuntu' }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script_stop: true
-          # Hardcoded key structure with exact cryptographic multiline spacing preserved
-          key: |
-            -----BEGIN RSA PRIVATE KEY-----
-            MIIEpAIBAAKCAQEApy4CCqTt3nt0NE6oYhjdXl0WRAHhD25gizSX+Q4YbRlbmfOw
-            P9GQJ4wWo5I/mdMDSGqJ5d5dgjd0X8X1Ohhz+A9TFKNdrKni2YqewGxQTsptBxYb
-            T6vFdlBVKcioqeHdpbS0FNDZCRem+jZNDX6yidomjc6PdXZQGtD2T4mkLfrHpGgO
-            UstwJrhDAhKw/WFfVIMRhdOaESPJSeaJXj2Yv0Iy72lCfv0Ny8AeeYO4pmHTgGMc
-            fNH/y11+5tPQc5B2AxPaeaGMJuElQm6RRzxG0Hrc/ZYwV+IC+iuaNqDqudqa4/sl
-            BbgvQHabbuCVqi9p66sBpqUTKVLq9F/ylCS4uwIDAQABAoIBABv7JlpTuoBnV069
-            747jrIFzwRtG2T108vG5rsn/ovT3ro447EHyOFd2Kf/cpYqAd+cx9bykmDAIShER
-            l/bOSvK01en5Yd9ZW9+fROzd9B8L4G20NIQEMvuXfHmO3TP52tg2Q4HMZtcPv2HX
-            ntPoZceO3K8VaIt3bvbeDKvJVNJhBqCmFEDUPZIR8J1uXAAwSfmCY/Li3Ulb7m1K
-            nIsxTEOaxu5Fz+29YqHRT3FT3OC0klkr4GHwupfLiNafyCtOuuT+Nk90xjq0QUe/
-            mV95CfH4F1/sti7egELbZUwT6a1lUPOLpMMSSiH41oAVQ5aLGXYM1LUDyZrjxNdW
-            p0rDJuECgYEA2HQVJQoSaGkvArH5rqe+YklaRSmT1ZgwUTEi8uOjst0CiSFE2q1o
-            CK1WHK29/ZnYCZJNHxV7039P0UK4zWChXfoP5Foyfs3mscFn5RwY1IVatsixzgYX
-            Vt7Fd1XJy6a6MSGTws5icvmfE3ttXi2ZPIQXWhrH8F4GAlRgDp2rvTECgYEAxblN
-            60sXfsJs4QNcfnWOljgH4VvJY/xjbcycDmWNtGKWDMhcOf4I3Raqw+kl/0cJkNmc
-            35rLn42/kqh0kRA0qUb0D5HKXBSbymSmNjDSzVwvZ5POyx6ARCArBCddRtwSPRHD
-            ojGRr/KpH4NWYMbnWTsWNzjEZ+4oz3C0SEkIqasCgYEAwWZvIiouqmYZIAJfwoOU
-            44MBCj0NH1MdEN6jiHyHXqCEzHwSZoV8KAygnX1L/dVBJ8Q17mkmu6HMcoB4WOFX
-            LX3qRzGkXpKg5wCVUSvar8D7fcgyvo/IuNDRhT/8z18IjC+hM/VuF6ccUK7+2KBL
-            g7vOla7KKOYJ3nj/Xu/YbHECgYBZCYEVG9OQuWzeRu035Sg4bTLfQL4H0HfV0fXU
-            ZdbSDDMVvoQJeWP0a2iqoCsEMbEVEWmbJ9HaH7LNEB6t1GZidBkjibtei8k78ucG
-            MCY9Y+3U7rKItUt9Yh78190hM6ji50T5nOjGGrgeAL69BdTYUctHQsDvLEgkYdRN
-            WNYV0QKBgQDCbwglhvP+amElUEtjhYU0i+weU5vX/r8xDPEx4j/a4HFIbRec/mwi
-            V3HcrBY9c072DtLxK/f0g4fzgc/xMbOi1Gx/c9zPoVgpCWbHYeOi2w41abOJii7e
-            vMp0v3Tj3jyOVl7mKiQSDM/R4cwFJsOxpAPbDgpGeLHhwyA7CHX1VA==
-            -----END RSA PRIVATE KEY-----
-
           script: |
             set -e
             echo "🚀 Starting Deployment on AWS EC2..."
 
+            # 1. Cleanly ensure repository exists & is git-linked
             if [ ! -d "$HOME/Dropshipping/.git" ]; then
               echo "📥 Fresh cloning repository..."
               rm -rf $HOME/Dropshipping
-              git clone https://github.com $HOME/Dropshipping
+              git clone https://github.com/green749/Dropshipping.git $HOME/Dropshipping
             fi
 
             cd $HOME/Dropshipping
 
+            # 2. Fetch latest git configuration
             echo "🔄 Syncing git main branch..."
             git fetch origin main
             git reset --hard origin/main
 
+            # 3. Pull newly pushed Docker Hub images
             echo "📥 Pulling latest images from Docker Hub..."
             docker compose -f docker-compose.prod.yml pull || sudo docker compose -f docker-compose.prod.yml pull
 
+            # 4. Restart containers with newly pulled images
             echo "🐳 Restarting production containers..."
             docker compose -f docker-compose.prod.yml up -d --force-recreate || sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
 
-            echo "🧹 Cleaning up unused images..."
+            # 5. Clean up unused images
             docker image prune -f || sudo docker image prune -f
 
             echo "✅ Deployment completed successfully!"

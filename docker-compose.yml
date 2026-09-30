@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: dropship_management
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Chithra@8123
+      POSTGRES_PASSWORD: Chithra_dev_2026
     ports:
       - "5432:5432"
     volumes:
@@ -64,7 +64,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=dropship_management
       - DB_USER=postgres
-      - DB_PASSWORD=Chithra@8123
+      - DB_PASSWORD=Chithra_dev_2026
     depends_on:
       - postgres
     networks:
@@ -83,7 +83,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=dropship_management
       - DB_USER=postgres
-      - DB_PASSWORD=Chithra@8123
+      - DB_PASSWORD=Chithra_dev_2026
     depends_on:
       - postgres
     networks:
@@ -102,7 +102,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=dropship_management
       - DB_USER=postgres
-      - DB_PASSWORD=Chithra@8123
+      - DB_PASSWORD=Chithra_dev_2026
     depends_on:
       - postgres
     networks:
@@ -121,7 +121,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=dropship_management
       - DB_USER=postgres
-      - DB_PASSWORD=Chithra@8123
+      - DB_PASSWORD=Chithra_dev_2026
     depends_on:
       - postgres
     networks:
@@ -140,7 +140,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=dropship_management
       - DB_USER=postgres
-      - DB_PASSWORD=Chithra@8123
+      - DB_PASSWORD=Chithra_dev_2026
     depends_on:
       - postgres
     networks:
@@ -159,7 +159,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=dropship_management
       - DB_USER=postgres
-      - DB_PASSWORD=Chithra@8123
+      - DB_PASSWORD=Chithra_dev_2026
     depends_on:
       - postgres
     networks:
