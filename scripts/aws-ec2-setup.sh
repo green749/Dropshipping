@@ -53,11 +53,8 @@ fi
 
 # 5. Build and launch Docker containers
 echo "🐳 Building and starting Docker containers (Frontend + Backend + DB)..."
-if docker compose version &> /dev/null; then
-    sudo docker compose -f docker-compose.prod.yml up -d --build
-else
-    sudo docker-compose -f docker-compose.prod.yml up -d --build
-fi
+sudo docker compose -f docker-compose.prod.yml pull || true
+sudo docker compose -f docker-compose.prod.yml up -d --build
 
 # 6. Wait for containers to initialize
 echo "⏳ Waiting 15 seconds for database & microservices to initialize..."

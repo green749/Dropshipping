@@ -28,6 +28,9 @@ services:
   # 3. Microservice: Auth Service
   auth-service:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dropship-prod-auth
     restart: always
     command: ["node", "services/auth-service/server.js"]
@@ -51,6 +54,9 @@ services:
   # 4. Microservice: Business Dealer Service
   business-service:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dropship-prod-business
     restart: always
     command: ["node", "services/business-dealer-service/server.js"]
@@ -74,6 +80,9 @@ services:
   # 5. Microservice: Product Service
   product-service:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dropship-prod-product
     restart: always
     command: ["node", "services/product-service/server.js"]
@@ -97,6 +106,9 @@ services:
   # 6. Microservice: Order Service
   order-service:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dropship-prod-order
     restart: always
     command: ["node", "services/order-service/server.js"]
@@ -120,6 +132,9 @@ services:
   # 7. Microservice: Marketing Service
   marketing-service:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dropship-prod-marketing
     restart: always
     command: ["node", "services/marketing-service/server.js"]
@@ -143,6 +158,9 @@ services:
   # 8. Microservice: Analytics Service
   analytics-service:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dropship-prod-analytics
     restart: always
     command: ["node", "services/analytics-service/server.js"]
@@ -166,6 +184,9 @@ services:
   # 9. API Gateway & Socket.IO WebSockets Server
   api-gateway:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: dropship-prod-gateway
     restart: always
     command: ["node", "services/api-gateway/server.js"]
@@ -200,6 +221,9 @@ services:
   # 10. Frontend React SPA (Built & Served via Nginx)
   frontend:
     image: ${DOCKER_HUB_USERNAME:-green749}/dropship-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: dropship-prod-frontend
     restart: always
     networks:
