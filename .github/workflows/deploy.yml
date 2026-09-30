@@ -62,26 +62,29 @@ jobs:
             set -e
             echo "🚀 Starting Deployment on AWS EC2..."
 
-            # 1. Clone or update repository
-            if [ ! -d "$HOME/Dropshipping" ]; then
+            # 1. Cleanly ensure repository exists & is git-linked
+            if [ ! -d "$HOME/Dropshipping/.git" ]; then
+              echo "📥 Fresh cloning repository..."
+              rm -rf $HOME/Dropshipping
               git clone https://github.com/green749/Dropshipping.git $HOME/Dropshipping
             fi
 
             cd $HOME/Dropshipping
 
-            # 2. Pull latest git configuration
+            # 2. Fetch latest git configuration
+            echo "🔄 Syncing git main branch..."
             git fetch origin main
             git reset --hard origin/main
 
             # 3. Pull newly pushed Docker Hub images
             echo "📥 Pulling latest images from Docker Hub..."
-            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml pull || sudo docker compose -f docker-compose.prod.yml pull
 
             # 4. Restart containers with newly pulled images
             echo "🐳 Restarting production containers..."
-            docker compose -f docker-compose.prod.yml up -d --force-recreate
+            docker compose -f docker-compose.prod.yml up -d --force-recreate || sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
 
             # 5. Clean up unused images
-            docker image prune -f
+            docker image prune -f || sudo docker image prune -f
 
             echo "✅ Deployment completed successfully!"
