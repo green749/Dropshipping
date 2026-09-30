@@ -9,7 +9,7 @@ RUN npm ci
 COPY . .
 
 # Build Vite application for production
-RUN npm run build
+RUN npx vite build
 
 # Stage 2: Serve static files with Nginx
 FROM nginx:alpine
