@@ -79,7 +79,7 @@ jobs:
             sudo docker --version
             sudo docker compose version
 
-            # 3. Create 4GB Swap Space if missing (Prevents out-of-memory crashes)
+            # 3. Create 4GB Swap Space if missing
             if [ ! -f /swapfile ]; then
               echo "💾 Creating 4GB Swap Space..."
               sudo fallocate -l 4G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
@@ -89,7 +89,11 @@ jobs:
               echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
             fi
 
-            # 4. Clone or update repository
+            # 4. Clean up disk space before pulling new images (Prevents 'no space left on device')
+            echo "🧹 Cleaning up unused Docker images & cache to free disk space..."
+            sudo docker system prune -af --volumes || true
+
+            # 5. Clone or update repository
             APP_DIR="$HOME/Dropshipping"
             if [ ! -d "$APP_DIR/.git" ]; then
               echo "📥 Fresh cloning repository..."
@@ -106,7 +110,7 @@ jobs:
               exit 1
             fi
 
-            # 5. Pull & deploy production containers
+            # 6. Pull & deploy production containers
             echo "📥 Pulling latest Docker Hub images..."
             sudo docker compose -f docker-compose.prod.yml pull
 
@@ -114,6 +118,6 @@ jobs:
             sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
 
             sudo docker ps
-            sudo docker image prune -f
+            sudo docker system prune -af || true
 
             echo "✅ Deployment completed successfully!"
