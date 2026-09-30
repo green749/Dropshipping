@@ -51,54 +51,69 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
+          username: ${{ secrets.EC2_USERNAME || 'ubuntu' }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script_stop: true
           script: |
             set -e
 
-            echo "Starting EC2 Deployment"
+            echo "🚀 Starting EC2 Deployment..."
 
+            # 1. Install Docker on EC2 if missing
             if ! command -v docker >/dev/null 2>&1; then
-              echo "Docker is not installed on EC2."
-              exit 1
+              echo "📦 Docker not found. Installing Docker on EC2..."
+              sudo apt-get update -y
+              sudo apt-get install -y docker.io git curl
+              sudo systemctl enable --now docker || true
+              sudo usermod -aG docker ubuntu || true
+            fi
+
+            # 2. Install Docker Compose plugin if missing
+            if ! sudo docker compose version >/dev/null 2>&1; then
+              echo "📦 Docker Compose not found. Installing Docker Compose..."
+              sudo apt-get update -y
+              sudo apt-get install -y docker-compose-v2 || sudo apt-get install -y docker-compose || true
             fi
 
             sudo docker --version
-
-            if ! sudo docker compose version >/dev/null 2>&1; then
-              echo "Docker Compose is not installed."
-              exit 1
-            fi
-
             sudo docker compose version
 
-            APP_DIR="$HOME/Dropshipping"
+            # 3. Create 4GB Swap Space if missing (Prevents out-of-memory crashes)
+            if [ ! -f /swapfile ]; then
+              echo "💾 Creating 4GB Swap Space..."
+              sudo fallocate -l 4G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+              sudo chmod 600 /swapfile
+              sudo mkswap /swapfile
+              sudo swapon /swapfile
+              echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
+            fi
 
+            # 4. Clone or update repository
+            APP_DIR="$HOME/Dropshipping"
             if [ ! -d "$APP_DIR/.git" ]; then
+              echo "📥 Fresh cloning repository..."
               rm -rf "$APP_DIR"
               git clone https://github.com/green749/Dropshipping.git "$APP_DIR"
             fi
 
             cd "$APP_DIR"
-
             git fetch origin main
             git reset --hard origin/main
 
             if [ ! -f "docker-compose.prod.yml" ]; then
-              echo "docker-compose.prod.yml not found."
+              echo "❌ docker-compose.prod.yml not found."
               exit 1
             fi
 
-            sudo docker compose -f docker-compose.prod.yml config -q
-
+            # 5. Pull & deploy production containers
+            echo "📥 Pulling latest Docker Hub images..."
             sudo docker compose -f docker-compose.prod.yml pull
 
+            echo "🐳 Starting production containers..."
             sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
 
             sudo docker ps
-
             sudo docker image prune -f
 
-            echo "Deployment completed successfully"
+            echo "✅ Deployment completed successfully!"
