@@ -55,6 +55,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script_stop: true
+          envs: DOCKER_HUB_USER,DOCKER_HUB_PASS
           script: |
             set -e
 
@@ -89,11 +90,18 @@ jobs:
               echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
             fi
 
-            # 4. Clean up disk space before pulling new images (Prevents 'no space left on device')
-            echo "🧹 Cleaning up unused Docker images & cache to free disk space..."
+            # 4. Clean up disk space before pulling new images
+            echo "🧹 Cleaning up unused Docker images & cache..."
             sudo docker system prune -af --volumes || true
 
-            # 5. Clone or update repository
+            # 5. Log in to Docker Hub on EC2 (Required for private repos)
+            if [ -n "$DOCKER_HUB_USER" ] && [ -n "$DOCKER_HUB_PASS" ]; then
+              echo "🔐 Authenticating Docker Hub on EC2..."
+              echo "$DOCKER_HUB_PASS" | sudo docker login -u "$DOCKER_HUB_USER" --password-stdin
+              export DOCKER_HUB_USERNAME="$DOCKER_HUB_USER"
+            fi
+
+            # 6. Clone or update repository
             APP_DIR="$HOME/Dropshipping"
             if [ ! -d "$APP_DIR/.git" ]; then
               echo "📥 Fresh cloning repository..."
@@ -110,14 +118,17 @@ jobs:
               exit 1
             fi
 
-            # 6. Pull & deploy production containers
+            # 7. Pull & deploy production containers
             echo "📥 Pulling latest Docker Hub images..."
-            sudo docker compose -f docker-compose.prod.yml pull
+            DOCKER_HUB_USERNAME="${DOCKER_HUB_USER:-green749}" sudo -E docker compose -f docker-compose.prod.yml pull
 
             echo "🐳 Starting production containers..."
-            sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
+            DOCKER_HUB_USERNAME="${DOCKER_HUB_USER:-green749}" sudo -E docker compose -f docker-compose.prod.yml up -d --force-recreate
 
             sudo docker ps
             sudo docker system prune -af || true
 
             echo "✅ Deployment completed successfully!"
+        env:
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASS: ${{ secrets.DOCKER_HUB_TOKEN }}
