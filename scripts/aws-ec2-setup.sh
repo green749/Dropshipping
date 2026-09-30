@@ -26,16 +26,16 @@ echo "👤 Configuring Docker permissions..."
 sudo usermod -aG docker $USER || true
 
 # 3. Create 4GB Swap Space (Prevents out-of-memory issues with microservices)
-if [ ! -f /swapfile ]; then
-    echo "💾 Creating 4GB Swap Space..."
-    sudo fallocate -l 4G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+if [ ! -f /swapfile ] || [ $(stat -c%s /swapfile 2>/dev/null || echo 0) -gt 2000000000 ]; then
+    echo "💾 Creating 1GB Swap Space..."
+    sudo swapoff /swapfile 2>/dev/null || true
+    sudo rm -f /swapfile
+    sudo fallocate -l 1G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
-    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-    echo "✅ 4GB Swap created successfully."
-else
-    echo "✅ Swap file already exists."
+    grep -q '/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
+    echo "✅ 1GB Swap created successfully."
 fi
 
 # 4. Clone or update repository
