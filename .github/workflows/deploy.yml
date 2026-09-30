@@ -1,0 +1,84 @@
+name: CI/CD Pipeline - Docker Hub & AWS EC2 Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Build Docker Images and Push to Docker Hub
+  # -------------------------------------------------------------
+  build-and-push:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-backend:latest
+
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-frontend:latest
+
+  # -------------------------------------------------------------
+  # Job 2: Deploy Updated Docker Images to AWS EC2
+  # -------------------------------------------------------------
+  deploy-to-aws:
+    name: Deploy to AWS EC2
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            # 1. Create project directory if it doesn't exist
+            if [ ! -d "$HOME/Dropshipping" ]; then
+              git clone https://github.com/green749/Dropshipping.git $HOME/Dropshipping
+            fi
+
+            cd $HOME/Dropshipping
+
+            # 2. Pull latest git changes (for configuration & compose files)
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 3. Pull latest Docker images from Docker Hub
+            echo "Pulling latest Docker images from Docker Hub..."
+            docker compose -f docker-compose.prod.yml pull
+
+            # 4. Restart containers with the updated images
+            echo "Restarting containers with newly pulled images..."
+            docker compose -f docker-compose.prod.yml up -d --force-recreate
+
+            # 5. Clean up unused images to free disk space
+            docker image prune -f

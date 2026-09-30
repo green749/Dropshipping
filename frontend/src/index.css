@@ -1,0 +1,671 @@
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --canvas-bg: #F8FAF8;
+    --surface-1: #FFFFFF;
+    --surface-2: #F0F6F2;
+    --border-subtle: rgba(22, 18, 63, 0.08);
+    --border-strong: rgba(22, 18, 63, 0.16);
+    --text-main: #16123F;
+    --text-muted: #555279;
+    --color-teal: #75C9B7;
+    --color-yellow: #FFE26A;
+    --color-green: #ABD699;
+    --color-sage: #C7DDCC;
+    --color-midnight: #16123F;
+  }
+
+  body {
+    background-color: var(--canvas-bg);
+    background-image:
+      radial-gradient(circle at 100% 0%, rgba(117, 201, 183, 0.08) 0px, transparent 45%),
+      radial-gradient(circle at 0% 100%, rgba(171, 214, 153, 0.08) 0px, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255, 226, 106, 0.04) 0px, transparent 60%);
+    background-attachment: fixed;
+    color: var(--text-main);
+    font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* ─── Standard Typography Scale (Desktop Base) ─── */
+  h1,
+  .text-h1,
+  .heading-1 {
+    font-size: 36px;
+    line-height: 44px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+  }
+
+  h2,
+  .text-h2,
+  .heading-2 {
+    font-size: 30px;
+    line-height: 38px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--text-main);
+  }
+
+  h3,
+  .text-h3,
+  .heading-3 {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-main);
+  }
+
+  h4,
+  .text-h4,
+  .heading-4 {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--text-main);
+  }
+
+  p,
+  .text-body {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+  }
+
+  small,
+  .text-small {
+    font-size: 14px;
+    line-height: 21px;
+    font-weight: 400;
+  }
+
+  caption,
+  .text-caption {
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 500;
+  }
+
+  label,
+  .text-label {
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
+  /* ─── Tablet Typography Overrides (768px – 1024px) ─── */
+  @media (max-width: 1024px) and (min-width: 768px) {
+
+    h1,
+    .text-h1,
+    .heading-1 {
+      font-size: 32px;
+      line-height: 40px;
+    }
+
+    h2,
+    .text-h2,
+    .heading-2 {
+      font-size: 28px;
+      line-height: 36px;
+    }
+
+    h3,
+    .text-h3,
+    .heading-3 {
+      font-size: 24px;
+      line-height: 32px;
+    }
+
+    h4,
+    .text-h4,
+    .heading-4 {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    p,
+    .text-body {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    small,
+    .text-small {
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    caption,
+    .text-caption {
+      font-size: 12px;
+      line-height: 18px;
+    }
+  }
+
+  /* ─── Mobile Typography Overrides (< 768px) ─── */
+  @media (max-width: 767px) {
+
+    h1,
+    .text-h1,
+    .heading-1 {
+      font-size: 28px;
+      line-height: 34px;
+    }
+
+    h2,
+    .text-h2,
+    .heading-2 {
+      font-size: 24px;
+      line-height: 30px;
+    }
+
+    h3,
+    .text-h3,
+    .heading-3 {
+      font-size: 20px;
+      line-height: 26px;
+    }
+
+    h4,
+    .text-h4,
+    .heading-4 {
+      font-size: 18px;
+      line-height: 24px;
+    }
+
+    p,
+    .text-body {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    small,
+    .text-small {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    caption,
+    .text-caption {
+      font-size: 12px;
+      line-height: 18px;
+    }
+  }
+}
+
+/* ─── Numeric & Tabular Alignment ─── */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Surface & Depth Variants (Light Theme) ─── */
+.surface-panel,
+.glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px -10px rgba(5, 23, 71, 0.08);
+}
+
+.surface-card,
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 15px -3px rgba(5, 23, 71, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.surface-card:hover,
+.glass-card:hover {
+  border-color: rgba(8, 31, 98, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -8px rgba(5, 23, 71, 0.1);
+}
+
+/* ─── Animations ─── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─── Skeleton Loading ─── */
+.skeleton {
+  background: linear-gradient(90deg, #F0F6F2 25%, #E1ECE5 50%, #F0F6F2 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ─── Input & Form Fields (Themed with Palette) ─── */
+.input-field {
+  width: 100%;
+  padding: 0.6875rem 1rem;
+  border-radius: 1rem;
+  background: #F8FAF8;
+  border: 1.5px solid #C7DDCC;
+  color: #16123F;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+select.input-field,
+.input-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2316123F' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.125rem;
+  padding-right: 2.75rem;
+  cursor: pointer;
+}
+
+select.input-field option,
+select option {
+  background-color: #FFFFFF;
+  color: #16123F;
+  padding: 0.625rem 1rem;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.input-field:hover {
+  background: #FFFFFF;
+  border-color: #75C9B7;
+}
+
+.input-field:focus {
+  background: #FFFFFF;
+  border-color: #75C9B7;
+  box-shadow: 0 0 0 4px rgba(117, 201, 183, 0.25);
+}
+
+.input-field::placeholder {
+  color: #8C9F92;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  color: #16123F;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.375rem;
+}
+
+/* ─── Form Section Cards & Wells ─── */
+.form-well {
+  background: #F0F6F2;
+  border: 1px solid #C7DDCC;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+}
+
+/* ─── Photo / Avatar Circle Uploader ─── */
+.photo-uploader-circle {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #75C9B7 0%, #ABD699 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #16123F;
+  box-shadow: 0 8px 20px -4px rgba(117, 201, 183, 0.4);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.photo-uploader-circle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 25px -4px rgba(117, 201, 183, 0.5);
+}
+
+/* ─── Action Hierarchy (5-Color Palette Theme) ─── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #75C9B7 0%, #58B6A3 100%);
+  color: #16123F;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(117, 201, 183, 0.35);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #87D5C4 0%, #68C1AF 100%);
+  box-shadow: 0 6px 18px rgba(117, 201, 183, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(117, 201, 183, 0.25);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 9999px;
+  background-color: #F0F6F2;
+  color: #16123F;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border: 1px solid #C7DDCC;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #E2ECE5;
+  color: #16123F;
+}
+
+/* ─── Form Inputs ─── */
+.input-field {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid #C7DDCC;
+  background-color: #F8FAF8;
+  color: #16123F;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.input-field::placeholder {
+  color: rgba(85, 82, 121, 0.45);
+}
+
+.input-field:hover {
+  background-color: #FFFFFF;
+  border-color: #75C9B7;
+}
+
+.input-field:focus {
+  background-color: #FFFFFF;
+  border-color: #75C9B7;
+  box-shadow: 0 0 0 3px rgba(117, 201, 183, 0.25);
+}
+
+.input-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #F0F6F2;
+}
+
+.btn-accent-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #FFE26A 0%, #F5CE38 100%);
+  color: #16123F;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(255, 226, 106, 0.4);
+}
+
+.btn-accent-gold:hover {
+  background: linear-gradient(135deg, #FFEA85 0%, #F7D654 100%);
+  transform: translateY(-1px);
+}
+
+.btn-accent-green {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #ABD699 0%, #95C780 100%);
+  color: #16123F;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(171, 214, 153, 0.35);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(117, 201, 183, 0.15);
+  color: #16123F;
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 9999px;
+  background: #FFEBEB;
+  color: #DC2626;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #FEE2E2;
+}
+
+/* ─── Scrollbars ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C7DDCC;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #75C9B7;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #C7DDCC;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #75C9B7;
+}
+
+/* ─── Scannable Data Tables ─── */
+.data-table thead th {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 700;
+  color: #16123F;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #C7DDCC;
+  background: #F0F6F2;
+  user-select: none;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid rgba(22, 18, 63, 0.06);
+  transition: background 0.15s ease;
+}
+
+.data-table tbody tr:hover {
+  background: #F2F8F4;
+}
+
+.data-table td {
+  padding: 0.875rem 1rem;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--text-main);
+  font-weight: 400;
+}
+
+/* ─── Chart Tooltip Refinements ─── */
+.recharts-cartesian-grid line {
+  stroke: var(--border-subtle);
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #FFFFFF !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(5, 23, 71, 0.15) !important;
+  color: var(--text-main) !important;
+  padding: 12px 16px !important;
+  font-weight: 500 !important;
+}

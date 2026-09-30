@@ -1,0 +1,174 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dropship-postgres
+    environment:
+      POSTGRES_DB: dropship_management
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Chithra@8123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dropship-network
+
+  redis:
+    image: redis:alpine
+    container_name: dropship-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - dropship-network
+
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.gateway
+    container_name: dropship-api-gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - BUSINESS_SERVICE_URL=http://business-service:5002
+      - PRODUCT_SERVICE_URL=http://product-service:5003
+      - ORDER_SERVICE_URL=http://order-service:5004
+      - MARKETING_SERVICE_URL=http://marketing-service:5005
+      - ANALYTICS_SERVICE_URL=http://analytics-service:5006
+    depends_on:
+      - auth-service
+      - business-service
+      - product-service
+      - order-service
+      - marketing-service
+      - analytics-service
+    networks:
+      - dropship-network
+
+  auth-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.auth
+    container_name: dropship-auth-service
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=dropship_management
+      - DB_USER=postgres
+      - DB_PASSWORD=Chithra@8123
+    depends_on:
+      - postgres
+    networks:
+      - dropship-network
+
+  business-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.business
+    container_name: dropship-business-service
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=dropship_management
+      - DB_USER=postgres
+      - DB_PASSWORD=Chithra@8123
+    depends_on:
+      - postgres
+    networks:
+      - dropship-network
+
+  product-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.product
+    container_name: dropship-product-service
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=dropship_management
+      - DB_USER=postgres
+      - DB_PASSWORD=Chithra@8123
+    depends_on:
+      - postgres
+    networks:
+      - dropship-network
+
+  order-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.order
+    container_name: dropship-order-service
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=dropship_management
+      - DB_USER=postgres
+      - DB_PASSWORD=Chithra@8123
+    depends_on:
+      - postgres
+    networks:
+      - dropship-network
+
+  marketing-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.marketing
+    container_name: dropship-marketing-service
+    ports:
+      - "5005:5005"
+    environment:
+      - PORT=5005
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=dropship_management
+      - DB_USER=postgres
+      - DB_PASSWORD=Chithra@8123
+    depends_on:
+      - postgres
+    networks:
+      - dropship-network
+
+  analytics-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.analytics
+    container_name: dropship-analytics-service
+    ports:
+      - "5006:5006"
+    environment:
+      - PORT=5006
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=dropship_management
+      - DB_USER=postgres
+      - DB_PASSWORD=Chithra@8123
+    depends_on:
+      - postgres
+    networks:
+      - dropship-network
+
+networks:
+  dropship-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

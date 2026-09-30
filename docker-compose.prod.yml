@@ -1,0 +1,256 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Server
+  postgres:
+    image: postgres:15-alpine
+    container_name: dropship-prod-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: dropship_management
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Chithra@8123}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - dropship-prod-network
+
+  # 2. Redis Cache Server
+  redis:
+    image: redis:alpine
+    container_name: dropship-prod-redis
+    restart: always
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - dropship-prod-network
+
+  # 3. Microservice: Auth Service
+  auth-service:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-auth
+    restart: always
+    command: ["node", "services/auth-service/server.js"]
+    environment:
+      - PORT=5001
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-dropship_jwt_access_secret_auth_2026_x89a4b2c}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dropship_jwt_refresh_secret_auth_2026_z17f9e3d}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - dropship-prod-network
+
+  # 4. Microservice: Business Dealer Service
+  business-service:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-business
+    restart: always
+    command: ["node", "services/business-dealer-service/server.js"]
+    environment:
+      - PORT=5002
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-dropship_jwt_access_secret_auth_2026_x89a4b2c}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dropship_jwt_refresh_secret_auth_2026_z17f9e3d}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - dropship-prod-network
+
+  # 5. Microservice: Product Service
+  product-service:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-product
+    restart: always
+    command: ["node", "services/product-service/server.js"]
+    environment:
+      - PORT=5003
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-dropship_jwt_access_secret_auth_2026_x89a4b2c}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dropship_jwt_refresh_secret_auth_2026_z17f9e3d}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - dropship-prod-network
+
+  # 6. Microservice: Order Service
+  order-service:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-order
+    restart: always
+    command: ["node", "services/order-service/server.js"]
+    environment:
+      - PORT=5004
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-dropship_jwt_access_secret_auth_2026_x89a4b2c}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dropship_jwt_refresh_secret_auth_2026_z17f9e3d}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - dropship-prod-network
+
+  # 7. Microservice: Marketing Service
+  marketing-service:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-marketing
+    restart: always
+    command: ["node", "services/marketing-service/server.js"]
+    environment:
+      - PORT=5005
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-dropship_jwt_access_secret_auth_2026_x89a4b2c}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dropship_jwt_refresh_secret_auth_2026_z17f9e3d}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - dropship-prod-network
+
+  # 8. Microservice: Analytics Service
+  analytics-service:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-analytics
+    restart: always
+    command: ["node", "services/analytics-service/server.js"]
+    environment:
+      - PORT=5006
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-dropship_jwt_access_secret_auth_2026_x89a4b2c}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dropship_jwt_refresh_secret_auth_2026_z17f9e3d}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - dropship-prod-network
+
+  # 9. API Gateway & Socket.IO WebSockets Server
+  api-gateway:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-gateway
+    restart: always
+    command: ["node", "services/api-gateway/server.js"]
+    environment:
+      - PORT=5000
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - BUSINESS_SERVICE_URL=http://business-service:5002
+      - PRODUCT_SERVICE_URL=http://product-service:5003
+      - ORDER_SERVICE_URL=http://order-service:5004
+      - MARKETING_SERVICE_URL=http://marketing-service:5005
+      - ANALYTICS_SERVICE_URL=http://analytics-service:5006
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=${DB_PASSWORD:-Chithra@8123}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_dropship_2026_dev}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-dropship_jwt_access_secret_auth_2026_x89a4b2c}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dropship_jwt_refresh_secret_auth_2026_z17f9e3d}
+    depends_on:
+      - auth-service
+      - business-service
+      - product-service
+      - order-service
+      - marketing-service
+      - analytics-service
+      - redis
+    networks:
+      - dropship-prod-network
+
+  # 10. Frontend React SPA (Built & Served via Nginx)
+  frontend:
+    image: ${DOCKER_HUB_USERNAME:-green749}/dropship-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dropship-prod-frontend
+    restart: always
+    networks:
+      - dropship-prod-network
+
+  # 11. Main Nginx Gateway Reverse Proxy
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: dropship-prod-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - certbot_certs:/etc/letsencrypt
+    depends_on:
+      - frontend
+      - api-gateway
+    networks:
+      - dropship-prod-network
+
+networks:
+  dropship-prod-network:
+    driver: bridge
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+  certbot_certs:
