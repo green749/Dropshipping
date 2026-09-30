@@ -6,9 +6,6 @@ on:
       - main
 
 jobs:
-  # =============================================================
-  # Job 1: Build Docker Images and Push to Docker Hub
-  # =============================================================
   build-and-push:
     name: Build & Push Docker Images to Docker Hub
     runs-on: ubuntu-latest
@@ -42,9 +39,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-frontend:latest
 
-  # =============================================================
-  # Job 2: Deploy Updated Images to AWS EC2
-  # =============================================================
   deploy-to-aws:
     name: Deploy to AWS EC2 via SSH
     needs: build-and-push
@@ -52,17 +46,17 @@ jobs:
 
     steps:
       - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME || 'ubuntu' }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
+          script_stop: true
           script: |
             set -e
             echo "🚀 Starting Deployment on AWS EC2..."
 
-            # 1. Cleanly ensure repository exists & is git-linked
             if [ ! -d "$HOME/Dropshipping/.git" ]; then
               echo "📥 Fresh cloning repository..."
               rm -rf $HOME/Dropshipping
@@ -71,20 +65,17 @@ jobs:
 
             cd $HOME/Dropshipping
 
-            # 2. Fetch latest git configuration
             echo "🔄 Syncing git main branch..."
             git fetch origin main
             git reset --hard origin/main
 
-            # 3. Pull newly pushed Docker Hub images
             echo "📥 Pulling latest images from Docker Hub..."
             docker compose -f docker-compose.prod.yml pull || sudo docker compose -f docker-compose.prod.yml pull
 
-            # 4. Restart containers with newly pulled images
             echo "🐳 Restarting production containers..."
             docker compose -f docker-compose.prod.yml up -d --force-recreate || sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
 
-            # 5. Clean up unused images
+            echo "🧹 Cleaning up unused images..."
             docker image prune -f || sudo docker image prune -f
 
             echo "✅ Deployment completed successfully!"
