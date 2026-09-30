@@ -6,11 +6,8 @@ on:
       - main
 
 jobs:
-  # =============================================================
-  # Job 1: Build Docker Images and Push to Docker Hub
-  # =============================================================
   build-and-push:
-    name: Build & Push Docker Images to Docker Hub
+    name: Build & Push Docker Images
     runs-on: ubuntu-latest
 
     steps:
@@ -20,72 +17,88 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: Build and Push Backend Image
-        uses: docker/build-push-action@v5
+      - name: Build & Push Backend Image
+        uses: docker/build-push-action@v6
         with:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-backend:latest
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-backend:latest
 
-      - name: Build and Push Frontend Image
-        uses: docker/build-push-action@v5
+      - name: Build & Push Frontend Image
+        uses: docker/build-push-action@v6
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-frontend:latest
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/dropship-frontend:latest
 
-  # =============================================================
-  # Job 2: Deploy Updated Images to AWS EC2
-  # =============================================================
   deploy-to-aws:
-    name: Deploy to AWS EC2 via SSH
+    name: Deploy to AWS EC2
     needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to EC2 via SSH
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME || 'ubuntu' }}
+          username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script_stop: true
           script: |
             set -e
-            echo "🚀 Starting Deployment on AWS EC2..."
 
-            # 1. Cleanly ensure repository exists & is git-linked
-            if [ ! -d "$HOME/Dropshipping/.git" ]; then
-              echo "📥 Fresh cloning repository..."
-              rm -rf $HOME/Dropshipping
-              git clone https://github.com/green749/Dropshipping.git $HOME/Dropshipping
+            echo "Starting EC2 Deployment"
+
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "Docker is not installed on EC2."
+              exit 1
             fi
 
-            cd $HOME/Dropshipping
+            sudo docker --version
 
-            # 2. Fetch latest git configuration
-            echo "🔄 Syncing git main branch..."
+            if ! sudo docker compose version >/dev/null 2>&1; then
+              echo "Docker Compose is not installed."
+              exit 1
+            fi
+
+            sudo docker compose version
+
+            APP_DIR="$HOME/Dropshipping"
+
+            if [ ! -d "$APP_DIR/.git" ]; then
+              rm -rf "$APP_DIR"
+              git clone https://github.com/green749/Dropshipping.git "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
+
             git fetch origin main
             git reset --hard origin/main
 
-            # 3. Pull newly pushed Docker Hub images
-            echo "📥 Pulling latest images from Docker Hub..."
-            docker compose -f docker-compose.prod.yml pull || sudo docker compose -f docker-compose.prod.yml pull
+            if [ ! -f "docker-compose.prod.yml" ]; then
+              echo "docker-compose.prod.yml not found."
+              exit 1
+            fi
 
-            # 4. Restart containers with newly pulled images
-            echo "🐳 Restarting production containers..."
-            docker compose -f docker-compose.prod.yml up -d --force-recreate || sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
+            sudo docker compose -f docker-compose.prod.yml config -q
 
-            # 5. Clean up unused images
-            docker image prune -f || sudo docker image prune -f
+            sudo docker compose -f docker-compose.prod.yml pull
 
-            echo "✅ Deployment completed successfully!"
+            sudo docker compose -f docker-compose.prod.yml up -d --force-recreate
+
+            sudo docker ps
+
+            sudo docker image prune -f
+
+            echo "Deployment completed successfully"
