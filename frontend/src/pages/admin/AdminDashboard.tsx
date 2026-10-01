@@ -134,7 +134,7 @@ export const AdminDashboard: React.FC = () => {
     return { delivered: del, processing: proc, pending: ret, totalCount: total, percent: pct };
   }, [displayOrders]);
 
-  // Real 7-day Activity breakdown from database
+  // Real 7-day Activity breakdown from database for selected business
   const activityData = useMemo(() => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const counts: Record<string, { count: number; total: number }> = {
@@ -148,13 +148,18 @@ export const AdminDashboard: React.FC = () => {
     };
 
     displayOrders.forEach((order) => {
-      if (order.created_at) {
-        const d = new Date(order.created_at);
-        const dayIndex = (d.getDay() + 6) % 7; // Monday = 0
-        const dayName = days[dayIndex];
-        if (counts[dayName]) {
-          counts[dayName].count += 1;
-          counts[dayName].total += parseFloat(String(order.total_amount || 0)) || 0;
+      const dateVal = order.created_at || (order as any).createdAt || (order as any).createdDate || (order as any).date;
+      const amountVal = parseFloat(String(order.total_amount ?? (order as any).totalAmount ?? (order as any).total ?? 0)) || 0;
+
+      if (dateVal) {
+        const d = new Date(dateVal);
+        if (!isNaN(d.getTime())) {
+          const dayIndex = (d.getDay() + 6) % 7; // Monday = 0
+          const dayName = days[dayIndex];
+          if (counts[dayName]) {
+            counts[dayName].count += 1;
+            counts[dayName].total += amountVal;
+          }
         }
       }
     });
@@ -164,7 +169,7 @@ export const AdminDashboard: React.FC = () => {
 
     return days.map((day) => {
       const { count, total } = counts[day];
-      const heightPercent = count > 0 ? Math.max(18, Math.round((count / maxCount) * 100)) : 8;
+      const heightPercent = count > 0 ? Math.max(25, Math.round((count / maxCount) * 100)) : 12;
       const isPeak = total > 0 && total === maxTotal;
       return {
         day,
@@ -177,23 +182,28 @@ export const AdminDashboard: React.FC = () => {
     });
   }, [displayOrders]);
 
-  // Real 7-day Revenue Spline Trend from database
+  // Real 7-day Revenue Spline Trend from database for selected business
   const revenueTrendData = useMemo(() => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const dayTotals = [0, 0, 0, 0, 0, 0, 0];
 
     displayOrders.forEach((order) => {
-      if (order.created_at) {
-        const d = new Date(order.created_at);
-        const dayIndex = (d.getDay() + 6) % 7;
-        dayTotals[dayIndex] += parseFloat(String(order.total_amount || 0)) || 0;
+      const dateVal = order.created_at || (order as any).createdAt || (order as any).createdDate || (order as any).date;
+      const amountVal = parseFloat(String(order.total_amount ?? (order as any).totalAmount ?? (order as any).total ?? 0)) || 0;
+
+      if (dateVal) {
+        const d = new Date(dateVal);
+        if (!isNaN(d.getTime())) {
+          const dayIndex = (d.getDay() + 6) % 7;
+          dayTotals[dayIndex] += amountVal;
+        }
       }
     });
 
-    const maxVal = Math.max(...dayTotals, 10);
+    const maxVal = Math.max(...dayTotals, 1);
     const points = dayTotals.map((val, idx) => {
       const x = Math.round((idx / 6) * 300);
-      const y = totalSales > 0 ? Math.round(85 - (val / maxVal) * 65) : 85;
+      const y = maxVal > 0 && val > 0 ? Math.round(80 - (val / maxVal) * 60) : 80;
       return { x, y, val };
     });
 
@@ -264,7 +274,7 @@ export const AdminDashboard: React.FC = () => {
             (3D Holographic Prism + Advantages Glassmorphic Card)
         ════════════════════════════════════════════════════════════════ */}
         <div className="lg:col-span-4 bg-white rounded-[32px] p-6 border border-[#C7DDCC] shadow-sm flex flex-col justify-between relative overflow-hidden">
-          {/* Top Scope Header with ✕ Button */}
+          {/* Top Scope Header without close button */}
           <div className="flex items-center justify-between z-10">
             <div className="flex items-center gap-2">
               <span className="text-sm font-extrabold text-[#16123F] tracking-tight">
@@ -274,13 +284,6 @@ export const AdminDashboard: React.FC = () => {
                 {selectedBusiness ? (selectedBusiness.status || 'Active') : 'All Stores'}
               </span>
             </div>
-            <button
-              onClick={() => dispatch(selectBusiness(null))}
-              className="w-7 h-7 rounded-full bg-[#F0F6F2] hover:bg-[#C7DDCC] text-[#16123F] flex items-center justify-center text-xs font-bold transition-all shadow-xs cursor-pointer"
-              title={selectedBusiness ? "Switch to all businesses" : "Active scope"}
-            >
-              ✕
-            </button>
           </div>
 
           {/* 3D Holographic Prism Graphic */}
